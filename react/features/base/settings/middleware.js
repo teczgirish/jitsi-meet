@@ -1,9 +1,12 @@
 // @flow
 import _ from 'lodash';
 
+import { PREJOIN_INITIALIZED } from '../../prejoin/actionTypes';
+import { isVpaasMeeting } from '../../vpaas/functions';
 import { APP_WILL_MOUNT } from '../app';
 import { setAudioOnly } from '../audio-only';
 import { SET_LOCATION_URL } from '../connection/actionTypes'; // minimize imports to avoid circular imports
+import { getJwtName } from '../jwt/functions';
 import { getLocalParticipant, participantUpdated } from '../participants';
 import { MiddlewareRegistry } from '../redux';
 import { parseURLParams } from '../util';
@@ -27,6 +30,10 @@ MiddlewareRegistry.register(store => next => action => {
     case APP_WILL_MOUNT:
         _initializeCallIntegration(store);
         break;
+    case PREJOIN_INITIALIZED: {
+        _maybeUpdateDisplayName(store);
+        break;
+    }
     case SETTINGS_UPDATED:
         _maybeHandleCallIntegrationChange(action);
         _maybeSetAudioOnly(store, action);
@@ -112,6 +119,25 @@ function _maybeSetAudioOnly(
         { settings: { startAudioOnly } }) {
     if (typeof startAudioOnly === 'boolean') {
         dispatch(setAudioOnly(startAudioOnly, true));
+    }
+}
+
+/**
+ * Updates the display name to the one in JWT for vpaas meetings.
+ *
+ * @param {Store} store - The redux store.
+ * @private
+ * @returns {void}
+ */
+function _maybeUpdateDisplayName({ dispatch, getState }) {
+    const state = getState();
+
+    if (isVpaasMeeting(state)) {
+        const displayName = getJwtName(state);
+
+        dispatch(updateSettings({
+            displayName
+        }));
     }
 }
 
