@@ -2,6 +2,8 @@ import groovy.json.JsonSlurper
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
+apply plugin: 'com.github.decendents.android-maven'
+group = 'com.github.teczgirish'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
