@@ -235,13 +235,16 @@ class Conference extends AbstractConference<Props, *> {
             _connecting,
             _filmstripVisible,
             _largeVideoParticipantId,
-            _reducedUI,
+            _reducedUI ,
             _shouldDisplayTileView,
             _toolboxVisible
         } = this.props;
+
         const showGradient = _toolboxVisible;
         const applyGradientStretching
             = _filmstripVisible && _aspectRatio === ASPECT_RATIO_NARROW && !_shouldDisplayTileView;
+
+
 
         if (_reducedUI) {
             return this._renderContentForReducedUi();
@@ -301,7 +304,7 @@ class Conference extends AbstractConference<Props, *> {
                         <DisplayNameLabel participantId = { _largeVideoParticipantId } />
                     </Container> }
 
-                    <LonelyMeetingExperience />
+                    {/* <LonelyMeetingExperience /> */}
 
                     {/*
                       * The Toolbox is in a stacking layer below the Filmstrip.
@@ -324,7 +327,7 @@ class Conference extends AbstractConference<Props, *> {
                     pointerEvents = 'box-none'
                     style = { styles.navBarSafeView }>
                     <NavigationBar />
-                    { this._renderNotificationsContainer() }
+                    {/* { this._renderNotificationsContainer() } */}
                     <KnockingParticipantList />
                 </SafeAreaView>
 
@@ -332,7 +335,7 @@ class Conference extends AbstractConference<Props, *> {
 
                 { this._renderConferenceNotification() }
 
-                { this._renderConferenceModals() }
+                {/* { this._renderConferenceModals() } */}
             </>
         );
     }

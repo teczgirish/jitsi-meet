@@ -203,7 +203,6 @@ class WelcomePage extends AbstractWelcomePage {
     _renderHintBox() {
         if (this.state._fieldFocused) {
             const { t } = this.props;
-
             return (
                 <Animated.View style = { this._getHintBoxStyle() }>
                     <View style = { styles.hintTextContainer } >

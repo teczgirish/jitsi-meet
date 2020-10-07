@@ -78,6 +78,28 @@ const styles = {
         marginBottom: BoxModel.margin / 2,
         paddingHorizontal: BoxModel.margin
     },
+    /**
+     * The style of the toolbar.
+     */
+    toolbarBeforeLive: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        flexGrow: 0,
+        justifyContent: 'space-around',
+        marginBottom: BoxModel.margin / 2,
+    },
+
+    /**
+     * toolbar style before live
+     */
+    toolbarBeforeLive: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        flexGrow: 0,
+        justifyContent: 'space-around',
+        marginBottom: BoxModel.margin / 2,
+        paddingHorizontal: BoxModel.margin
+    },
 
     /**
      * The style of the root/top-level {@link Container} of {@link Toolbox}.

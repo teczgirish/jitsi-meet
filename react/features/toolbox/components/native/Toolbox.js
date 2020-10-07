@@ -1,7 +1,8 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
+import { getRoomName } from '../../../base/conference';
 
 import { ColorSchemeRegistry } from '../../../base/color-scheme';
 import { Container } from '../../../base/react';
@@ -12,6 +13,7 @@ import { isToolboxVisible } from '../../functions';
 import AudioMuteButton from '../AudioMuteButton';
 import HangupButton from '../HangupButton';
 import VideoMuteButton from '../VideoMuteButton';
+import { getCurrentConference } from '../../../base/conference';
 
 import OverflowMenuButton from './OverflowMenuButton';
 import styles from './styles';
@@ -20,6 +22,11 @@ import styles from './styles';
  * The type of {@link Toolbox}'s React {@code Component} props.
  */
 type Props = {
+
+    /**
+     * The name of the current conference. Used as part of inviting users.
+     */
+    _roomName: string,
 
     /**
      * The color-schemed stylesheet of the feature.
@@ -41,6 +48,17 @@ type Props = {
  * Implements the conference toolbox on React Native.
  */
 class Toolbox extends PureComponent<Props> {
+
+
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            startRecording: false,
+            startDemo: false,
+        }
+        this._startRecording = this._startRecording.bind(this)
+        this._startDemo = this._startDemo.bind(this)
+    }
     /**
      * Implements React's {@link Component#render()}.
      *
@@ -52,7 +70,10 @@ class Toolbox extends PureComponent<Props> {
             <Container
                 style = { styles.toolbox }
                 visible = { this.props._visible }>
-                { this._renderToolbar() }
+                {
+                    this.state.startRecording ? this._renderToolbar() : this._initialRenderButton()
+                }
+
             </Container>
         );
     }
@@ -88,6 +109,71 @@ class Toolbox extends PureComponent<Props> {
         };
     }
 
+    _startRecording() {
+        this.setState({
+            startDemo: false,
+            startRecording: true,
+        })
+    }
+
+    _startDemo() {
+        fetch(`https://api.myntra.com/matrix/live/${'5f7c929a700b671d7867927c'}/record`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                action: 'START',
+            })
+        }).then((response) => console.log('testinggirish', response))
+        .catch((error) => {
+            console.log('testinggirish-err', response);
+        });
+    }
+
+    /**
+     *  Renders the initial button for demo and start live screen
+     * The Demo will do nothing but shows the live screen ux as such
+     * Start live screen button will
+     */
+    _initialRenderButton() {
+        const { _styles } = this.props;
+        const { buttonStyles, buttonStylesBorderless, hangupButtonStyles, toggledButtonStyles } = _styles;
+        return (<View
+            accessibilityRole = 'toolbar'
+            pointerEvents = 'box-none'
+            style = { styles.toolbarBeforeLive }
+        >
+            <Text
+                style={{
+                    textAlign: 'center', textAlignVertical: 'center',
+                    backgroundColor: '#ff3f6c', width: 162, height: 40, alignItems: 'center',
+                    fontSize: 14, fontWeight: "600", fontStyle: "normal",
+                    lineHeight: 20, borderRadius: 4,
+                    color: "#ffffff"
+                }}
+                onPress={ this._startDemo }
+            >
+                Start Demo
+            </Text>
+            <Text
+                style={{
+                    textAlign: 'center', textAlignVertical: 'center',
+                    backgroundColor: '#ff3f6c', width: 162, height: 40, alignItems: 'center',
+                    fontSize: 14, fontWeight: "600", fontStyle: "normal",
+                    lineHeight: 20, borderRadius: 4,
+                    color: "#ffffff"
+                }}
+                title="Start Live Session"
+                onPress={ this._startRecording }
+            >
+                Start Live Session
+            </Text>
+
+        </View>)
+
+    }
+
     /**
      * Renders the toolbar. In order to avoid a weird visual effect in which the
      * toolbar is (visually) rendered and then visibly changes its size, it is
@@ -104,9 +190,9 @@ class Toolbox extends PureComponent<Props> {
                 accessibilityRole = 'toolbar'
                 pointerEvents = 'box-none'
                 style = { styles.toolbar }>
-                <ChatButton
+                {/* <ChatButton
                     styles = { buttonStylesBorderless }
-                    toggledStyles = { this._getChatButtonToggledStyle(toggledButtonStyles) } />
+                    toggledStyles = { this._getChatButtonToggledStyle(toggledButtonStyles) } /> */}
                 <AudioMuteButton
                     styles = { buttonStyles }
                     toggledStyles = { toggledButtonStyles } />
@@ -115,9 +201,9 @@ class Toolbox extends PureComponent<Props> {
                 <VideoMuteButton
                     styles = { buttonStyles }
                     toggledStyles = { toggledButtonStyles } />
-                <OverflowMenuButton
+                {/* <OverflowMenuButton
                     styles = { buttonStylesBorderless }
-                    toggledStyles = { toggledButtonStyles } />
+                    toggledStyles = { toggledButtonStyles } /> */}
             </View>
         );
     }
@@ -135,7 +221,8 @@ class Toolbox extends PureComponent<Props> {
 function _mapStateToProps(state: Object): Object {
     return {
         _styles: ColorSchemeRegistry.get(state, 'Toolbox'),
-        _visible: isToolboxVisible(state)
+        _visible: isToolboxVisible(state),
+        _roomName: getRoomName(state)
     };
 }
 
